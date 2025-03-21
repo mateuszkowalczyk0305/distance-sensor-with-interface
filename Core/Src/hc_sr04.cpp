@@ -8,11 +8,11 @@
 #include "hc_sr04.h"
 #include "tim.h"
 
-uint32_t ic_val1 = 0;
-uint32_t ic_val2 = 0;
-uint8_t is_first_captured = 0;
-uint32_t diff;
-float distance;
+//uint32_t ic_val1 = 0;
+//uint32_t ic_val2 = 0;
+//uint8_t is_first_captured = 0;
+//uint32_t diff;
+//float distance;
 
 HC_SR04* HC_SR04::instance = nullptr;
 
@@ -49,14 +49,14 @@ void HAL_TIM_IC_CaptureCallback(TIM_HandleTypeDef *htim){
 	    {
 	    	HC_SR04::instance->ic_val2 = HAL_TIM_ReadCapturedValue(htim, TIM_CHANNEL_1);
 	      __HAL_TIM_SET_CAPTUREPOLARITY(htim, TIM_CHANNEL_1, TIM_INPUTCHANNELPOLARITY_RISING);
-	      __HAL_TIM_DISABLE_IT(&htim1, TIM_IT_CC1);
+	      __HAL_TIM_DISABLE_IT(htim, TIM_IT_CC1);
 
-	      if (ic_val2 > ic_val1)
-	    	  HC_SR04::instance->diff = ic_val2 - ic_val1;
+	      if (HC_SR04::instance->ic_val2 > HC_SR04::instance->ic_val1)
+	    	  HC_SR04::instance->diff = HC_SR04::instance->ic_val2 - HC_SR04::instance->ic_val1;
 	      else
-	        diff = (0xFFFF - ic_val1) + ic_val2;
+	    	  HC_SR04::instance->diff = (0xFFFF - HC_SR04::instance->ic_val1) + HC_SR04::instance->ic_val2;
 
-	      HC_SR04::instance->distance = (diff * 0.0343) / 2;
+	      HC_SR04::instance->distance = (HC_SR04::instance->diff * 0.0343) / 2;
 	      HC_SR04::instance->is_first_captured = 0;
 	    }
 	  }
