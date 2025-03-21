@@ -23,12 +23,15 @@ public:
 	void Read(void);
 
 	float distance;
-private:
-	TIM_HandleTypeDef* timer_echo;
+
+	static HC_SR04* instance;
 	uint32_t ic_val1 = 0;
 	uint32_t ic_val2 = 0;
 	uint8_t is_first_captured = 0;
 	uint32_t diff;
+private:
+	TIM_HandleTypeDef* timer_echo;
+
 };
 
 

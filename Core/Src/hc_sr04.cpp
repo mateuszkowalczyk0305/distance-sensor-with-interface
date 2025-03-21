@@ -14,8 +14,11 @@ uint8_t is_first_captured = 0;
 uint32_t diff;
 float distance;
 
+HC_SR04* HC_SR04::instance = nullptr;
+
 HC_SR04::HC_SR04(TIM_HandleTypeDef* _htim){
 	timer_echo = _htim;
+	instance = this;
 }
 
 void HC_SR04::delay_us(uint16_t us){
@@ -36,25 +39,25 @@ void HC_SR04::Read(void){
 void HAL_TIM_IC_CaptureCallback(TIM_HandleTypeDef *htim){
 	if (htim->Channel == HAL_TIM_ACTIVE_CHANNEL_1)
 	  {
-	    if (is_first_captured == 0)
+	    if (HC_SR04::instance->is_first_captured == 0)
 	    {
-	      ic_val1 = HAL_TIM_ReadCapturedValue(htim, TIM_CHANNEL_1);
+	      HC_SR04::instance->ic_val1 = HAL_TIM_ReadCapturedValue(htim, TIM_CHANNEL_1);
 	      __HAL_TIM_SET_CAPTUREPOLARITY(htim, TIM_CHANNEL_1, TIM_INPUTCHANNELPOLARITY_FALLING);
-	      is_first_captured = 1;
+	      HC_SR04::instance->is_first_captured = 1;
 	    }
 	    else
 	    {
-	      ic_val2 = HAL_TIM_ReadCapturedValue(htim, TIM_CHANNEL_1);
+	    	HC_SR04::instance->ic_val2 = HAL_TIM_ReadCapturedValue(htim, TIM_CHANNEL_1);
 	      __HAL_TIM_SET_CAPTUREPOLARITY(htim, TIM_CHANNEL_1, TIM_INPUTCHANNELPOLARITY_RISING);
 	      __HAL_TIM_DISABLE_IT(&htim1, TIM_IT_CC1);
 
 	      if (ic_val2 > ic_val1)
-	        diff = ic_val2 - ic_val1;
+	    	  HC_SR04::instance->diff = ic_val2 - ic_val1;
 	      else
 	        diff = (0xFFFF - ic_val1) + ic_val2;
 
-	      distance = (diff * 0.0343) / 2;
-	      is_first_captured = 0;
+	      HC_SR04::instance->distance = (diff * 0.0343) / 2;
+	      HC_SR04::instance->is_first_captured = 0;
 	    }
 	  }
 };

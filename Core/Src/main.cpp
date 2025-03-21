@@ -57,6 +57,8 @@ void SystemClock_Config(void);
 /* Private user code ---------------------------------------------------------*/
 /* USER CODE BEGIN 0 */
 
+float dist = 0;
+
 /* USER CODE END 0 */
 
 /**
@@ -108,7 +110,7 @@ int main(void)
 
 	  hc_sr04.Read();
 	  HAL_Delay(100);
-	  hc_sr04.distance;
+	  dist = hc_sr04.distance;
 
   }
   /* USER CODE END 3 */
